@@ -1,16 +1,20 @@
 """Data processing functions for the benchmarking project."""
 import math
+from dataclasses import dataclass
 from typing import List
 
 import numpy as np
 
 
-def convert_time_to_minutes(time: str) -> float:
-    """Convert a time string in the format mm:ss:msmsms to minutes."""
-    minutes, seconds, milliseconds = map(
-        float, time.split(":")[-2:] + time.split(".")[-1:]
-    )
-    return minutes + seconds / 60 + milliseconds / 60_000
+@dataclass
+class PricePerformanceArgs:
+    """Dataclass for the price/performance arguments."""
+
+    power_usage_watts_per_computer: List[float]
+    computer_rental_cost_per_hour: List[float]
+    cost_per_kwh: float
+    price_weight: float = 1
+    performance_weight: float = 1
 
 
 def convert_time_to_seconds(time: str) -> float:
@@ -21,14 +25,12 @@ def convert_time_to_seconds(time: str) -> float:
     return minutes * 60 + seconds + milliseconds / 1000
 
 
-def convert_seconds_to_time(seconds: float) -> str:
-    """Convert seconds to a time string in the format mm:ss:msmsms."""
-    minutes, remainder = divmod(seconds, 60)
-    seconds, milliseconds = divmod(remainder, 1)
-    return f"{int(minutes):02d}:{int(seconds):02d}.{int(milliseconds * 1000):03d}"
+def convert_seconds_to_minutes(seconds: float) -> float:
+    """Convert seconds to minutes."""
+    return seconds / 60
 
 
-def calculate_averages(data: List[List[List[str]]]) -> List[List[str]]:
+def calculate_averages(data: List[List[List[str]]]) -> List[List[float]]:
     """Calculate the averages for the provided data."""
     data_seconds = [
         [[convert_time_to_seconds(time) for time in run] for run in comp]
@@ -37,35 +39,32 @@ def calculate_averages(data: List[List[List[str]]]) -> List[List[str]]:
 
     averages_seconds = np.mean(data_seconds, axis=2)
 
-    averages_time = [
-        [convert_seconds_to_time(avg) for avg in comp] for comp in averages_seconds
-    ]
+    averages_time = [[avg for avg in comp] for comp in averages_seconds]
 
     return averages_time
 
 
 def calculate_price_performance_ratios(
-    averages: List[List[str]],
-    power_usage_watts_per_computer: List[float],
-    computer_rental_cost_per_hour: List[float],
-    cost_per_kwh: float,
-    price_weight: float,
-    performance_weight: float,
+    averages: List[List[float]],
+    args: PricePerformanceArgs,
 ) -> List[List[float]]:
     """Calculate the price/performance ratios for the provided data."""
     price_performance_ratios = []
     for i, comp_averages in enumerate(averages):
         comp_ratios = []
         for avg_time in comp_averages:
-            time_in_hours = convert_time_to_minutes(avg_time) / 60
+            time_in_hours = convert_seconds_to_minutes(avg_time) / 60
             energy_cost = (
-                power_usage_watts_per_computer[i] * time_in_hours * cost_per_kwh / 1000
+                args.power_usage_watts_per_computer[i]
+                * time_in_hours
+                * args.cost_per_kwh
+                / 1000
             )
-            rental_cost = computer_rental_cost_per_hour[i] * time_in_hours
-            total_cost = (price_weight * energy_cost) + (
-                performance_weight * rental_cost
+            rental_cost = args.computer_rental_cost_per_hour[i] * time_in_hours
+            total_cost = (args.price_weight * energy_cost) + (
+                args.performance_weight * rental_cost
             )
-            performance = 1 / convert_time_to_seconds(avg_time)
+            performance = 1 / avg_time
             ratio = performance / total_cost
             comp_ratios.append(ratio)
         price_performance_ratios.append(comp_ratios)

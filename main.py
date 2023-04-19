@@ -1,11 +1,13 @@
 """Main script for the chart plotter."""
 from pathlib import Path
 
-from chart_plotter import plot_average_time_in_mins_chart, plot_price_performance_chart
+from chart_plotter import plot_chart
 from data_loader import load_test_data
 from data_processing import (
+    PricePerformanceArgs,
     calculate_averages,
     calculate_price_performance_ratios,
+    convert_seconds_to_minutes,
     log_transform_ratios,
 )
 
@@ -20,36 +22,37 @@ data_file = Path("data.json")
     test_names,
 ) = load_test_data(data_file)
 
-# Process the data
 averages = calculate_averages(test_data)
 
+print("averages", averages)
 
-PRICE_WEIGHT = 1
-PERFORMANCE_WEIGHT = 1
-
-price_performance_ratios = calculate_price_performance_ratios(
+plot_chart(
     averages,
-    power_usage_watts_per_computer,
-    computer_rental_cost_per_hour,
-    cost_per_kwh,
-    PRICE_WEIGHT,
-    PERFORMANCE_WEIGHT,
+    computer_names,
+    test_names,
+    ylabel="Average Time in Mins",
+    conversion_func=convert_seconds_to_minutes,
 )
 
-print("price_performance_ratios", price_performance_ratios)
+
+price_performance_args = PricePerformanceArgs(
+    power_usage_watts_per_computer=power_usage_watts_per_computer,
+    computer_rental_cost_per_hour=computer_rental_cost_per_hour,
+    cost_per_kwh=cost_per_kwh,
+)
+
+price_performance_ratios = calculate_price_performance_ratios(
+    averages, price_performance_args
+)
 
 log_ratios = log_transform_ratios(price_performance_ratios)
+
+print("price_performance_ratios", price_performance_ratios)
 print("normalized_ratios", log_ratios)
 
-plot_average_time_in_mins_chart(averages, computer_names, test_names)
-
-
-# plot_chart(
-#     averages,
-#     computer_names,
-#     test_names,
-#     ylabel="Average Time in Mins",
-#     conversion_func=convert_time_to_minutes,
-# )
-
-plot_price_performance_chart(log_ratios, computer_names, test_names)
+plot_chart(
+    log_ratios,
+    computer_names,
+    test_names,
+    ylabel="Log Transformed Price/Performance Ratio",
+)
