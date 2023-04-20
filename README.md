@@ -1,5 +1,7 @@
 # Whisper Benchmark Viz
 
+Article to accompany this code [Whisper Showdown @ Medium](https://seandearnaley.medium.com/427ce5f486ea)
+
 This repository contains code for visualizing benchmarks comparing the execution time and cost for two different transcription models: [whisper.cpp](https://github.com/ggerganov/whisper.cpp) (CPU-based) and [openai-whisper](https://github.com/openai/whisper) (GPU-based using PyTorch). The code generates two charts: one for average execution time and the other for the log-transformed price/performance ratio.
 
 ## Installation
