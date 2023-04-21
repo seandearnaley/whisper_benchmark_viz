@@ -24,8 +24,10 @@ def plot_chart(
         conversion_func: A function to convert data if needed.
         grid: A boolean flag to enable/disable grid in the chart.
     """
+    plt.figure(figsize=(10, 6))
     test_indices = np.arange(len(test_names))
     colors = cm.get_cmap("viridis")(np.linspace(0, 1, len(computer_names)))
+    print("colors", colors)
     plt.gca().set_prop_cycle(color=colors)
 
     for i, comp_name in enumerate(computer_names):

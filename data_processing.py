@@ -18,7 +18,7 @@ class PricePerformanceArgs:
 
 
 def convert_time_to_seconds(time: str) -> float:
-    """Convert a time string in the format mm:ss:msmsms to seconds."""
+    """Convert a time string in the format [h]:mm:ss.000 to seconds."""
     minutes, seconds, milliseconds = map(
         float, time.split(":")[-2:] + time.split(".")[-1:]
     )
@@ -49,9 +49,9 @@ def calculate_price_performance_ratios(
     args: PricePerformanceArgs,
 ) -> List[List[float]]:
     """Calculate the price/performance ratios for the provided data."""
-    price_performance_ratios = []
+    price_performance_ratios: List[List[float]] = []
     for i, comp_averages in enumerate(averages):
-        comp_ratios = []
+        comp_ratios: List[float] = []
         for avg_time in comp_averages:
             time_in_hours = convert_seconds_to_minutes(avg_time) / 60
             energy_cost = (

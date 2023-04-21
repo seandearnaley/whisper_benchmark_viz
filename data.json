@@ -50,12 +50,12 @@
     ]
   ],
   "computer_names": [
-    "Macbook M1 Pro (16gb, Nov 2020)",
-    "M2 Pro Mini (32gb, Jan 2023)",
-    "Windows 11 ubuntu 22",
-    "RTX 2080TI",
-    "RTX 4090",
-    "A100 80GB 16 vCPU 62 GB RAM"
+    "CPU: Macbook M1 Pro (16gb, Nov 2020)",
+    "CPU: Mac M2 Pro (Mini 32gb, Jan 2023)",
+    "CPU: Windows 11 via Ubuntu 22 (32gb, Oct 2018)",
+    "GPU: RTX 2080TI (12gb VRAM, Sep 2018)",
+    "GPU: RTX 4090 (24gb, Oct 2022)",
+    "GPU: A100 (80GB 16 vCPU 62 GB RAM, Jun 2020)"
   ],
   "power_usage_watts_per_computer": [38.0, 50.0, 162.0, 297.0, 0.0, 0.0],
   "computer_rental_cost_per_hour": [0.0, 0.0, 0.0, 0.0, 0.64, 1.89],
